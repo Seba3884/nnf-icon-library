@@ -1,0 +1,11 @@
+# Netlify configuration for the NNF icon library gallery.
+# `npm run build` regenerates dist/ (including a self-contained index.html)
+# from the SVG sources in icons/, and dist/ is published as the static site.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

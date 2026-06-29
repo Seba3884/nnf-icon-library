@@ -240,6 +240,17 @@ writeFileSync(
 );
 writeFileSync(join(distDir, 'index.d.ts'), banner + `export * from './data';\n`);
 
+// ---------------------------------------------------------------------------
+// index.html  (self-contained static gallery, for static hosting like Netlify)
+// Generated from gallery/index.html with its data path rewritten so dist/ is
+// a fully self-contained deployable site (it already holds icons.json/sprite).
+// ---------------------------------------------------------------------------
+const galleryHtml = readFileSync(join(root, 'gallery', 'index.html'), 'utf8');
+writeFileSync(
+  join(distDir, 'index.html'),
+  galleryHtml.replace('../dist/icons.json', './icons.json')
+);
+
 console.log(
   `Built ${icons.length} icons -> dist/ (sprite.svg, icons.json, data.*, react.*, index.*)`
 );
