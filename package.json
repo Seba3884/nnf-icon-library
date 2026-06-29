@@ -1,0 +1,56 @@
+{
+  "name": "@nnf/icons",
+  "version": "0.1.0",
+  "description": "NNF icon library — a clean, consistent set of 24x24 outline SVG icons, available as raw SVGs, an SVG sprite, framework-agnostic data, and React components.",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "icons",
+    "svg",
+    "sprite",
+    "react",
+    "icon-library",
+    "nnf"
+  ],
+  "files": [
+    "dist",
+    "icons",
+    "scripts/build.mjs"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.mjs",
+      "require": "./dist/react.cjs"
+    },
+    "./sprite.svg": "./dist/sprite.svg",
+    "./icons.json": "./dist/icons.json",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node scripts/verify.mjs",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Seba3884/nnf-icon-library.git"
+  }
+}
