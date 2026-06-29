@@ -41,6 +41,12 @@ function extractInner(svg) {
 /** Normalise geometry to the bundle's tag style and collapse whitespace. */
 function normalise(inner) {
   return inner
+    // Strip baked-in presentation attributes so each element inherits stroke
+    // and fill from the page's treatment wrapper <g>. Without this, the source
+    // SVGs' hardcoded stroke="#2355C8" overrides the treatment colour, making
+    // the icon invisible on the blue-circle treatment (blue on blue) and wrong
+    // on the white/white-circle treatments.
+    .replace(/\s+(stroke|stroke-width|stroke-linecap|stroke-linejoin|fill)="[^"]*"/g, '')
     .replace(/\s+/g, ' ')
     .replace(/>\s+</g, '><')
     // self-closing -> explicit open/close, matching existing entries
