@@ -98,6 +98,50 @@ npx serve .        # or any static server
 # open http://localhost:3000/gallery/
 ```
 
+## Manage the deployed gallery in Sanity
+
+The large NNF category set shown on the deployed site (145 icons × 4 colour
+treatments) is managed in a **Sanity CMS** so non-developers can add and edit
+icons without touching code.
+
+- **Studio (edit here):** <https://nnf-icon-library.sanity.studio/>
+  Each `icon` document has a `name`, `title`, `category`, and an `svg` field.
+- **Project:** `NNF Icon Library` (`5jdxcai4`), dataset `production` (public read).
+
+### Add or edit an icon
+
+1. Open the Studio, create/edit an **Icon**, and fill in `name` (lowercase
+   kebab-case), `title`, `category`, and paste the `svg`.
+2. The SVG must use the NNF grid — `viewBox="0 0 40 40"` with an outer
+   `<g transform="translate(8,8)" …>` wrapper (the `_blue` variant). The site
+   strips the baked-in colours and draws each colour/circle treatment itself.
+3. **Publish.** A Sanity → Netlify webhook rebuilds the site, or trigger a
+   deploy manually.
+
+### How it syncs to the site
+
+`scripts/sync-from-sanity.mjs` runs on every Netlify build (see `netlify.toml`).
+It queries the public dataset, converts each `svg` into the bundle's `inner`
+geometry via `scripts/svg-geometry.mjs` (the same helpers the local
+`raw-icons/` flow uses), and rewrites the `ICONS` array in `site/index.html`.
+Run it locally too:
+
+```bash
+node scripts/sync-from-sanity.mjs   # Sanity → site/index.html
+```
+
+### Seed / re-seed from raw-icons
+
+To (re)populate Sanity from the local `raw-icons/` source of truth:
+
+```bash
+SANITY_PROJECT_ID=5jdxcai4 SANITY_DATASET=production \
+SANITY_WRITE_TOKEN=sk... node scripts/sanity-seed.mjs
+```
+
+The `studio/` folder is the code copy of the Studio (nice SVG previews); run it
+with `cd studio && npm install && npm run dev`.
+
 ## License
 
 [MIT](./LICENSE)
