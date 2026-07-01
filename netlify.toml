@@ -1,7 +1,22 @@
 # Netlify configuration for the NNF Icon Library site.
-# The site is a self-contained static page in site/ — no build step required.
+#
+# The site (site/index.html) is a self-contained static page. Its icon set is
+# pulled from Sanity at build time by scripts/sync-from-sanity.mjs, which reads
+# the public `production` dataset (no token needed) and regenerates the embedded
+# ICONS array before publishing. The script uses native fetch — zero deps.
+#
+# Wire a Sanity webhook (Manage → API → Webhooks) to a Netlify build hook so
+# publishing an icon in the Studio triggers a rebuild.
 [build]
+  command = "node scripts/sync-from-sanity.mjs"
   publish = "site"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # The sync script defaults to project 5jdxcai4 / dataset production; these
+  # let you point the build at a different Sanity source without a code change.
+  SANITY_PROJECT_ID = "5jdxcai4"
+  SANITY_DATASET = "production"
 
 [[headers]]
   for = "/*.svg"

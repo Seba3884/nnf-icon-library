@@ -98,6 +98,69 @@ npx serve .        # or any static server
 # open http://localhost:3000/gallery/
 ```
 
+## Manage the deployed gallery in Sanity
+
+The large NNF category set shown on the deployed site (145 icons × 4 colour
+treatments) is managed in a **Sanity CMS** so non-developers can add and edit
+icons without touching code.
+
+- **Studio (edit here):** <https://nnf-icon-library.sanity.studio/>
+  Each `icon` document has a `name`, `title`, `category`, and either an
+  **uploaded SVG file** or pasted `svg` markup.
+- **Project:** `NNF Icon Library` (`5jdxcai4`), dataset `production` (public read).
+
+### Add an icon (the easy way)
+
+1. In the Studio, click **Icon → Create**.
+2. Fill in **Name** (e.g. `annual-report`), **Display title**, and **Category**.
+3. Under **Icon file (SVG)**, **drag in the `.svg` you exported**. That's it —
+   no markup to touch.
+4. **Publish.**
+
+You don't have to match any exact grid: the build fits your icon to the NNF
+canvas and applies the blue/white + circle treatments automatically. It works
+best with a **single-colour outline icon on a square canvas** (24×24 is ideal),
+matching the Iconoir-style NNF set — fills and multi-colour art won't render,
+because every icon inherits one stroke colour from the page.
+
+**Prompt to make a matching icon in Claude** (then export as SVG and upload):
+
+> Make a single **24×24 outline SVG icon** of `<thing>`.
+> `viewBox="0 0 24 24"`, `fill="none"`, `stroke="currentColor"`,
+> `stroke-width="2"`, `stroke-linecap="round"`, `stroke-linejoin="round"`,
+> geometry roughly within the 2–22 range, no text, no background. Match the
+> clean Iconoir line style.
+
+*(Prefer to paste markup instead of uploading? Use the “Or paste SVG markup
+(advanced)” field.)*
+
+Then **Publish** — a Sanity → Netlify webhook rebuilds the site (or trigger a
+deploy manually).
+
+### How it syncs to the site
+
+`scripts/sync-from-sanity.mjs` runs on every Netlify build (see `netlify.toml`).
+It queries the public dataset, converts each `svg` into the bundle's `inner`
+geometry via `scripts/svg-geometry.mjs` (the same helpers the local
+`raw-icons/` flow uses), and rewrites the `ICONS` array in `site/index.html`.
+Run it locally too:
+
+```bash
+node scripts/sync-from-sanity.mjs   # Sanity → site/index.html
+```
+
+### Seed / re-seed from raw-icons
+
+To (re)populate Sanity from the local `raw-icons/` source of truth:
+
+```bash
+SANITY_PROJECT_ID=5jdxcai4 SANITY_DATASET=production \
+SANITY_WRITE_TOKEN=sk... node scripts/sanity-seed.mjs
+```
+
+The `studio/` folder is the code copy of the Studio (nice SVG previews); run it
+with `cd studio && npm install && npm run dev`.
+
 ## License
 
 [MIT](./LICENSE)
