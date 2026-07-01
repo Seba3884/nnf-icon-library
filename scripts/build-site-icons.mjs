@@ -24,14 +24,7 @@
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  extractInner,
-  normalise,
-  encodeInner,
-  iconEntry,
-  iconsArray,
-  replaceIconsArray,
-} from './svg-geometry.mjs';
+import {svgToInner, iconEntry, iconsArray, replaceIconsArray} from './svg-geometry.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const srcDir = join(root, 'raw-icons');
@@ -58,7 +51,7 @@ for (const file of files) {
   if (seen.has(key)) continue;
   seen.add(key);
 
-  const inner = normalise(extractInner(readFileSync(join(srcDir, file), 'utf8')));
+  const inner = svgToInner(readFileSync(join(srcDir, file), 'utf8'));
   if (!inner) {
     console.warn(`skip (empty geometry): ${file}`);
     continue;
@@ -66,7 +59,7 @@ for (const file of files) {
   if (inner.includes('[') || inner.includes(']')) {
     throw new Error(`Geometry of ${file} contains a bracket; would break array parsing.`);
   }
-  entries.push(iconEntry({ category, name, inner: encodeInner(inner) }));
+  entries.push(iconEntry({ category, name, inner }));
   byCategory[category] = (byCategory[category] || 0) + 1;
 }
 

@@ -105,18 +105,37 @@ treatments) is managed in a **Sanity CMS** so non-developers can add and edit
 icons without touching code.
 
 - **Studio (edit here):** <https://nnf-icon-library.sanity.studio/>
-  Each `icon` document has a `name`, `title`, `category`, and an `svg` field.
+  Each `icon` document has a `name`, `title`, `category`, and either an
+  **uploaded SVG file** or pasted `svg` markup.
 - **Project:** `NNF Icon Library` (`5jdxcai4`), dataset `production` (public read).
 
-### Add or edit an icon
+### Add an icon (the easy way)
 
-1. Open the Studio, create/edit an **Icon**, and fill in `name` (lowercase
-   kebab-case), `title`, `category`, and paste the `svg`.
-2. The SVG must use the NNF grid — `viewBox="0 0 40 40"` with an outer
-   `<g transform="translate(8,8)" …>` wrapper (the `_blue` variant). The site
-   strips the baked-in colours and draws each colour/circle treatment itself.
-3. **Publish.** A Sanity → Netlify webhook rebuilds the site, or trigger a
-   deploy manually.
+1. In the Studio, click **Icon → Create**.
+2. Fill in **Name** (e.g. `annual-report`), **Display title**, and **Category**.
+3. Under **Icon file (SVG)**, **drag in the `.svg` you exported**. That's it —
+   no markup to touch.
+4. **Publish.**
+
+You don't have to match any exact grid: the build fits your icon to the NNF
+canvas and applies the blue/white + circle treatments automatically. It works
+best with a **single-colour outline icon on a square canvas** (24×24 is ideal),
+matching the Iconoir-style NNF set — fills and multi-colour art won't render,
+because every icon inherits one stroke colour from the page.
+
+**Prompt to make a matching icon in Claude** (then export as SVG and upload):
+
+> Make a single **24×24 outline SVG icon** of `<thing>`.
+> `viewBox="0 0 24 24"`, `fill="none"`, `stroke="currentColor"`,
+> `stroke-width="2"`, `stroke-linecap="round"`, `stroke-linejoin="round"`,
+> geometry roughly within the 2–22 range, no text, no background. Match the
+> clean Iconoir line style.
+
+*(Prefer to paste markup instead of uploading? Use the “Or paste SVG markup
+(advanced)” field.)*
+
+Then **Publish** — a Sanity → Netlify webhook rebuilds the site (or trigger a
+deploy manually).
 
 ### How it syncs to the site
 

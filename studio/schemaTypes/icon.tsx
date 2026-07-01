@@ -24,13 +24,11 @@ export const icon = defineType({
       title: 'Name',
       type: 'string',
       description:
-        'Machine name, lowercase, e.g. "calendar" or "annual-report". Used to identify the icon in the library.',
+        'Short machine name, lowercase with dashes, e.g. "annual-report". Used to identify the icon.',
       validation: (rule) =>
         rule
           .required()
-          .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
-            name: 'lowercase kebab-case',
-          }),
+          .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {name: 'lowercase with dashes'}),
     }),
     defineField({
       name: 'title',
@@ -46,30 +44,39 @@ export const icon = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'svg',
-      title: 'SVG source',
-      type: 'text',
-      rows: 8,
+      name: 'svgFile',
+      title: 'Icon file (SVG)',
+      type: 'file',
+      options: {accept: 'image/svg+xml,.svg'},
       description:
-        'Paste the icon SVG on the NNF grid: viewBox="0 0 40 40" with an outer ' +
-        '<g transform="translate(8,8)" …> wrapper (the "_blue" variant). The site ' +
-        'strips the baked-in colours and draws each colour/circle treatment itself.',
-      validation: (rule) =>
-        rule.required().custom((value) => {
-          if (typeof value !== 'string') return 'SVG is required'
-          if (!/<svg[\s>]/i.test(value)) return 'Must contain an <svg> element'
-          return true
-        }),
+        'Drag in the .svg you exported (a simple single-colour outline icon on a square canvas — ' +
+        'the recommended size is 24×24). The site fits it to the NNF grid and applies the house ' +
+        'blue/white treatments automatically. This is the easy option — you never touch the code.',
+    }),
+    defineField({
+      name: 'svg',
+      title: 'Or paste SVG markup (advanced)',
+      type: 'text',
+      rows: 6,
+      description:
+        'Optional alternative to uploading a file: paste the raw <svg>…</svg>. Leave blank if you ' +
+        'uploaded a file above.',
     }),
   ],
+  validation: (rule) =>
+    rule.custom((doc: any) => {
+      if (doc?.svgFile?.asset?._ref || (typeof doc?.svg === 'string' && doc.svg.trim())) return true
+      return 'Add an icon: upload an SVG file or paste SVG markup.'
+    }),
   preview: {
-    select: {title: 'title', name: 'name', category: 'category', svg: 'svg'},
-    prepare({title, name, category, svg}) {
+    select: {title: 'title', name: 'name', category: 'category', svg: 'svg', media: 'svgFile'},
+    prepare({title, name, category, svg, media}) {
       const cat = CATEGORIES.find((c) => c.value === category)
       return {
         title: title || name || 'Untitled icon',
         subtitle: cat ? cat.title : category,
-        media: svg ? <IconPreview svg={svg} /> : undefined,
+        // Render pasted markup inline; otherwise show the uploaded file's icon.
+        media: svg ? <IconPreview svg={svg} /> : media,
       }
     },
   },
